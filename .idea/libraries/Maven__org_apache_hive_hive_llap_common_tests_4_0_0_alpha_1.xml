@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.hive:hive-llap-common:tests:4.0.0-alpha-1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-llap-common/4.0.0-alpha-1/hive-llap-common-4.0.0-alpha-1-tests.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-llap-common/4.0.0-alpha-1/hive-llap-common-4.0.0-alpha-1-test-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-llap-common/4.0.0-alpha-1/hive-llap-common-4.0.0-alpha-1-test-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movieaddict.dao.hivemapper.MovieMapper">
+
+    <sql id="movie_columns">id, movie_name, year_of_release, rating, movie_duration_second</sql>
+    <select id="testSelect" resultType="com.movieaddict.pojo.Movie">
+        select
+        <include refid="movie_columns" />
+        from movies limit 5
+    </select>
+    <select id="getCount" resultType="integer">
+        select count(*) from movies
+    </select>
+    <!-- the real demand -->
+    <!--
+        List<Movie> getAverageRating();
+        Find the average rating of the movies released each year
+        between 2002 to 20011 and display the result on the web
+        page by using a graph.
+     -->
+    <select id="getAverageRating" resultType="com.movieaddict.pojo.Movie">
+        select
+               year_of_release, avg(rating) as rating
+        from
+             movies
+        group by year_of_release
+        having
+               year_of_release between 2001 and 2011
+    </select>
+    <!--
+        List<Movie> getLowestTenRating();
+        Find the lowest 10 movies based on the rating, which
+        have column movie_duration_second as an odd number.
+     -->
+    <select id="getLowestTenRating" resultType="com.movieaddict.pojo.Movie">
+        select distinct
+               movie_name, movie_duration_second, rating
+        from
+             movies
+        where movie_duration_second%2!=0 and rating is not null
+        order by rating
+        limit 10
+    </select>
+    <!--
+        List<Movie> getHighestDuration()
+        Find the 10 values of year_of_release column in which
+        the total sum of movie_duration_second column is the
+        highest.
+     -->
+    <select id="getHighestDuration" resultType="com.movieaddict.pojo.Movie">
+        select distinct
+               movie_name, year_of_release, movie_duration_second
+        from
+             movies
+        order by movie_duration_second desc
+        limit 10
+    </select>
+    <!--
+        List<Movie> getRequiredDurationAndRating()
+        Find the list of the movies that have rating greater
+        than 3 or movie_duration_second is less than 4000.
+     -->
+    <select id="getRequiredDurationAndRating" resultType="com.movieaddict.pojo.Movie">
+        select distinct
+               movie_name, movie_duration_second, rating
+        from
+             movies
+        where
+              (rating > 3 or movie_duration_second &lt; 4000)
+          and rating is not null
+          and movie_duration_second is not null
+    </select>
+    <!--
+
+        Find the year_of_release and rating of lowest 3
+        movies based on rating.
+    -->
+    <select id="getLowestRatingYear" resultType="com.movieaddict.pojo.Movie">
+        select distinct
+             movie_name, year_of_release, rating
+        from
+             movies
+        where rating is not null
+        order by rating
+        limit 3
+    </select>
+    <!--
+        Find the year_of_release and rating of lowest 3 movies
+        based on movie_duration_second. And movies should be
+        released between 2005 to 2012.
+     -->
+    <select id="getRequired" resultType="com.movieaddict.pojo.Movie">
+        select movie_name, year_of_release, rating, movie_duration_second
+        from
+             movies
+        where year_of_release between 2005 and 2012
+          and movie_duration_second is not null
+        order by movie_duration_second
+        limit 3
+    </select>
+</mapper>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="MovieAddict:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>MovieAddict</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="MovieAddict-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="MovieAddict:war exploded" />
+    </root>
+  </artifact>
+</component>

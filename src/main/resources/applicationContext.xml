@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:property-placeholder location="classpath:jdbc.properties" />
+    <context:component-scan base-package="com.movieaddict.*" />
+
+    <!-- datasource -->
+    <bean id="hiveDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${hive.driverClassName}" />
+        <property name="url" value="${hive.url}" />
+        <property name="username" value="${hive.username}" />
+        <property name="password" value="${hive.password}" />
+        <property name="testWhileIdle" value="false" />
+    </bean>
+    <bean id="mysqlDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${mysql.driverClassName}" />
+        <property name="url" value="${mysql.url}" />
+        <property name="username" value="${mysql.username}" />
+        <property name="password" value="${mysql.password}" />
+        <property name="testWhileIdle" value="false" />
+    </bean>
+    <!-- dynamic datasource -->
+    <bean id="dynamicDataSource" class="com.movieaddict.utils.DynamicDataSource">
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry value-ref ="hiveDataSource" key= "hive_dataSource" />
+                <entry value-ref ="mysqlDataSource" key= "mysql_dataSource" />
+            </map>
+        </property>
+        <property name ="defaultTargetDataSource" ref= "mysqlDataSource" />
+    </bean>
+    <!-- SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dynamicDataSource" />
+        <property name="configLocation" value="classpath:mybatis-config.xml" />
+        <property name="mapperLocations" value="classpath:com/movieaddict/dao/*/*.xml" />
+    </bean>
+    <!-- mapper scanner -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+        <property name="basePackage" value="com.movieaddict.dao" />
+    </bean>
+    <!-- transaction manager -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dynamicDataSource" />
+    </bean>
+    <!-- transaction -->
+    <aop:config>
+        <aop:pointcut id="txPoint" expression="execution(* com.movieaddict.service..*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"/>
+    </aop:config>
+    <!-- 配置事务增强，事务如何切入  -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*"/>
+            <tx:method name="get*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+</beans>
